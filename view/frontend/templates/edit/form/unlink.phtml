@@ -1,0 +1,13 @@
+<?php
+
+/** @var \BenJohnsonDev\SocialLogin\Block\Form\Edit $block */
+
+// Return early if the user does not use social login
+if (!$block->isCustomerSocialLogin()) {
+    return;
+}
+?>
+<div class="social-login unlink edit-wrapper">
+    <h2><?= __('Linked account') ?></h2>
+    <?= $block->getProviderLabel() ?>
+</div>

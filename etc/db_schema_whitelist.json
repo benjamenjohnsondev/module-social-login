@@ -1,0 +1,17 @@
+{
+    "social_login_providers": {
+        "column": {
+            "entity_id": true,
+            "label": true,
+            "scope": true,
+            "icon": true,
+            "oauth_class": true,
+            "code": true,
+            "default_config": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "SOCIAL_LOGIN_PROVIDERS_CODE": true
+        }
+    }
+}

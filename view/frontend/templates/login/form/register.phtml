@@ -1,0 +1,40 @@
+<?php
+/** @var \BenJohnsonDev\SocialLogin\Block\SocialRegister $block */
+
+/** @var \Magento\Framework\Escaper $escaper */
+
+use BenJohnsonDev\SocialLogin\Block\Provider;
+
+$providers = $block->getProviders();
+
+if (empty($providers)) {
+    return;
+}
+?>
+
+<div id="social-login-block" class="social-login-wrapper">
+    <?php foreach ($providers as $provider) {
+        echo $block->getLayout()
+            ->createBlock(Provider::class)
+            ->setTemplate(Provider::TEMPLATE_PATH)
+            ->setData('provider', $provider)
+            ->toHtml();
+    } ?>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "#social-login-block": {
+            "BenJohnsonDev_SocialLogin/js/fa": {
+                "elemId": "social-login-form",
+                "fa-script-id": "<?= $escaper->escapeJs($block->getFaKitId()) ?>"
+            }
+    <?php if ($block->isNewsletterEnabled()) { ?>
+            ,
+            "BenJohnsonDev_SocialLogin/js/newsletter": {
+                "elem": ".checkbox"
+            }
+    <?php } ?>
+    }
+}
+</script>

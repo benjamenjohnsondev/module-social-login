@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="BenJohnsonDev\SocialLogin\Model\Data\ProviderConfig">
+        <arguments>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="BenJohnsonDev\SocialLogin\Controller\Account\Register">
+        <arguments>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="BenJohnsonDev\SocialLogin\Controller\Account\Create">
+        <arguments>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="BenJohnsonDev\SocialLogin\Model\Account\CreateManagement">
+        <arguments>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="BenJohnsonDev\SocialLogin\Model\Account\LoginManagement">
+        <arguments>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Security\Model\SecurityChecker\Frequency">
+        <plugin name="SocialLoging_BypassChecker_Frequency"
+                type="BenJohnsonDev\SocialLogin\Plugin\BypassChecker"/>
+    </type>
+    <type name="Magento\Security\Model\SecurityChecker\Quantity">
+        <plugin name="SocialLoging_BypassChecker_Quantity"
+                type="BenJohnsonDev\SocialLogin\Plugin\BypassChecker"/>
+    </type>
+</config>

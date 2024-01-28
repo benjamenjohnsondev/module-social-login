@@ -1,0 +1,22 @@
+<?php
+/** @var \BenJohnsonDev\SocialLogin\Block\Provider $block */
+
+/** @var \Magento\Framework\Escaper $escaper */
+
+$provider = $block->getProvider();
+?>
+<form class="social-login-form" id="social-login-<?= $escaper->escapeHtml($provider->getCode()); ?>" action="<?= $escaper->escapeHtml($block->getPostActionUrl()); ?>" method="post">
+    <?php /** Hidden input - keeps track if user has clicked on subscribe button or not **/ ?>
+    <input type="hidden" name="is_subscribed" title="Sign Up for Newsletter" value="0" class="checkbox">
+    <fieldset class="fieldset">
+        <input type="hidden" name="provider" value="<?= $escaper->escapeHtml($provider->getCode()); ?>">
+        <button type="submit" class="action submit primary provider <?= $escaper->escapeHtml($provider->getLabel()) ?>">
+        <span class="provider-icon">
+            <i class="<?= $escaper->escapeHtml($provider->getIcon()); ?>"></i>
+        </span>
+            <span class="provider-label">
+            <?= $escaper->escapeHtml($provider->getLabel()); ?>
+        </span>
+        </button>
+    </fieldset>
+</form>

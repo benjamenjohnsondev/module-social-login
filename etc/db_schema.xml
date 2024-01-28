@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="social_login_providers" resource="default" engine="innodb" comment="Provider Table">
+        <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Provider Id"/>
+        <column xsi:type="text" nullable="false" name="label" comment="Provider Label"/>
+        <column xsi:type="text" nullable="false" name="icon" comment="Provider Icon"/>
+        <column xsi:type="text" nullable="false" name="oauth_class" comment="Provider Oauth Class"/>
+        <column xsi:type="text" nullable="false" name="code" comment="Provider code"/>
+        <column xsi:type="text" nullable="true" name="default_config" comment="Provider Default config"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="SOCIAL_LOGIN_PROVIDERS_CODE">
+            <column name="code"/>
+        </constraint>
+    </table>
+</schema>

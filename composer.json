@@ -1,0 +1,26 @@
+{
+    "name": "benjohnsondev/module-social-login",
+    "description": "N/A",
+    "type": "magento2-module",
+    "require": {
+        "php": "^8.2",
+        "magento/framework": "^103.0.0",
+        "magento/module-customer": "^103.0.0",
+        "league/oauth2-facebook": "^2.2",
+        "league/oauth2-github": "^3.1",
+        "league/oauth2-google": "^4.0",
+        "league/oauth2-instagram": "^3.1",
+        "league/oauth2-linkedin": "^5.1"
+    },
+    "license": [
+        "AGPL-3.0-only"
+    ],
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "BenJohnsonDev\\SocialLogin\\": ""
+        }
+    }
+}
