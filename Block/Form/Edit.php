@@ -43,15 +43,15 @@ class Edit extends \Magento\Customer\Block\Form\Edit
     }
 
     /**
-     * Get the provider label
+     * Get the provider Code
      *
      * @return string
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getProviderLabel(): string
+    public function getProviderCode(): string
     {
 
-        return $this->getProvider()->getLabel();
+        return $this->getProvider()->getCode();
     }
 
     /**
@@ -73,6 +73,18 @@ class Edit extends \Magento\Customer\Block\Form\Edit
     public function getProviderAttribute(): AttributeInterface
     {
         return $this->getCustomer()->getCustomAttribute('provider');
+    }
+
+    /**
+     * Get the provider label
+     *
+     * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getProviderLabel(): string
+    {
+
+        return $this->getProvider()->getLabel();
     }
 
     /**

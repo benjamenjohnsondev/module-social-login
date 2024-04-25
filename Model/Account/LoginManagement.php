@@ -59,7 +59,7 @@ class LoginManagement implements LoginManagementInterface
 
         $this->customerSession->setCustomerDataAsLoggedIn($customer);
         $this->customerSession->regenerateId();
-        $this->messageManager->addSuccessMessage(__('You are now logged in.'));
+        $this->messageManager->addSuccessMessage(__('You logged in sucessfully.'));
 
         // @TODO Get redirect URL - this may need to be set on the session at the action controller
         $resultRedirect = $this->redirectFactory->create();
