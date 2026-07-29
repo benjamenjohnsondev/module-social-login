@@ -6,8 +6,7 @@ namespace BenJohnsonDev\SocialLogin\Plugin;
 
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Framework\Exception\SecurityViolationException;
-use Magento\Security\Model\SecurityChecker\Frequency;
-use Magento\Security\Model\SecurityChecker\Quantity;
+use Magento\Security\Model\SecurityChecker\SecurityCheckerInterface;
 
 class BypassChecker
 {
@@ -15,7 +14,7 @@ class BypassChecker
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
      */
     public function __construct(
-        protected CustomerRepositoryInterface $customerRepository
+        protected CustomerRepositoryInterface $customerRepository,
     ) {
     }
 
@@ -24,7 +23,7 @@ class BypassChecker
      *
      * This will only fire for social login requests - since we use the reset password functionality each time the user logs in
      *
-     * @param Frequency|Quantity $subject
+     * @param \Magento\Security\Model\SecurityChecker\SecurityCheckerInterface $subject
      * @param callable $proceed
      * @param int $securityEventType
      * @param string|null $accountReference
@@ -33,10 +32,7 @@ class BypassChecker
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\SecurityViolationException
-     * @noinspection PluginInspection
-     * @noinspection PhpMissingParamTypeInspection
-     * @noinspection PhpUnusedParameterInspection
-     * @noinspection PhpUnused
+     * @noinspection PhpMissingParamTypeInspection — $subject must remain untyped to match SecurityCheckerInterface::check() signature
      */
     public function aroundCheck(
         $subject,
@@ -51,8 +47,10 @@ class BypassChecker
             $customer = $this->customerRepository->get($accountReference);
 
             // Check for the provider attribute to determine if this is a social login request
-            if ($customer->getCustomAttribute('provider')->getValue() !== null ||
-                $customer->getCustomAttribute('provider')->getValue() !== 'revoked'
+            $providerAttribute = $customer->getCustomAttribute('provider');
+            if ($providerAttribute !== null &&
+                $providerAttribute->getValue() !== null &&
+                $providerAttribute->getValue() !== 'revoked'
             ) {
                 return;
             }

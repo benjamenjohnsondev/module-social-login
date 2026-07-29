@@ -5,95 +5,143 @@ declare(strict_types=1);
 namespace BenJohnsonDev\SocialLogin\Block\Form;
 
 use BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface;
-use BenJohnsonDev\SocialLogin\Model\ProviderRepository;
-use Magento\Customer\Api\AccountManagementInterface;
+use BenJohnsonDev\SocialLogin\Api\ProviderRepositoryInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
+use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Model\Session;
 use Magento\Framework\Api\AttributeInterface;
-use Magento\Framework\View\Element\Template\Context;
-use Magento\Newsletter\Model\SubscriberFactory;
+use Magento\Framework\View\Element\Template;
 
-class Edit extends \Magento\Customer\Block\Form\Edit
+class Edit extends Template
 {
+    private ?ProviderInterface $providerCache = null;
+
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Customer\Model\Session $customerSession
-     * @param \Magento\Newsletter\Model\SubscriberFactory $subscriberFactory
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
-     * @param \Magento\Customer\Api\AccountManagementInterface $customerAccountManagement
-     * @param \BenJohnsonDev\SocialLogin\Model\ProviderRepository $providerRepository
+     * @param \BenJohnsonDev\SocialLogin\Api\ProviderRepositoryInterface $providerRepository
      * @param array $data
      */
     public function __construct(
-        Context $context,
-        Session $customerSession,
-        SubscriberFactory $subscriberFactory,
-        CustomerRepositoryInterface $customerRepository,
-        AccountManagementInterface $customerAccountManagement,
-        protected ProviderRepository $providerRepository,
+        Template\Context $context,
+        private readonly Session $customerSession,
+        private readonly CustomerRepositoryInterface $customerRepository,
+        private readonly ProviderRepositoryInterface $providerRepository,
         array $data = []
     ) {
-        parent::__construct(
-            $context,
-            $customerSession,
-            $subscriberFactory,
-            $customerRepository,
-            $customerAccountManagement
-        );
+        parent::__construct($context, $data);
     }
 
     /**
-     * Get the provider Code
+     * Get the current customer data object
      *
-     * @return string
+     * @return \Magento\Customer\Api\Data\CustomerInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getProviderCode(): string
+    public function getCustomer(): CustomerInterface
     {
-
-        return $this->getProvider()->getCode();
+        return $this->customerRepository->getById($this->customerSession->getCustomerId());
     }
 
     /**
-     * Get the provider
+     * Return whether the account-edit form should open in change-password mode
      *
-     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface
+     * @return bool
+     */
+    public function getChangePassword(): bool
+    {
+        return (bool) $this->customerSession->getChangePassword();
+    }
+
+    /**
+     * Get the provider attribute for the current customer
+     *
+     * @return \Magento\Framework\Api\AttributeInterface|null
+     * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getProvider(): ProviderInterface
-    {
-        return $this->providerRepository->getByCode($this->getProviderAttribute()->getValue());
-    }
-
-    /**
-     * Get the provider attribute
-     *
-     * @return \Magento\Framework\Api\AttributeInterface
-     */
-    public function getProviderAttribute(): AttributeInterface
+    public function getProviderAttribute(): ?AttributeInterface
     {
         return $this->getCustomer()->getCustomAttribute('provider');
     }
 
     /**
-     * Get the provider label
+     * Check if the current customer authenticates via social login
+     *
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function isCustomerSocialLogin(): bool
+    {
+        $attr = $this->getProviderAttribute();
+        return $attr !== null && $attr->getValue() !== null && $attr->getValue() !== 'revoked';
+    }
+
+    /**
+     * Get the provider model for the current customer (memoised)
+     *
+     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getProvider(): ProviderInterface
+    {
+        if ($this->providerCache === null) {
+            $this->providerCache = $this->providerRepository->getByCode(
+                $this->getProviderAttribute()->getValue()
+            );
+        }
+        return $this->providerCache;
+    }
+
+    /**
+     * Get the provider code for the current customer
      *
      * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getProviderCode(): string
+    {
+        return $this->getProvider()->getCode();
+    }
+
+    /**
+     * Get the provider label for the current customer
+     *
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getProviderLabel(): string
     {
-
         return $this->getProvider()->getLabel();
     }
 
     /**
-     * Check if the customer is using social login
+     * Social login customers have no usable password — suppress the password field
      *
      * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function isCustomerSocialLogin(): bool
+    public function isPasswordRequired(): bool
     {
-        return $this->getProviderAttribute() !== null;
+        return !$this->isCustomerSocialLogin();
+    }
+
+    /**
+     * Social login customers have no usable current password — suppress the current-password field
+     *
+     * @return bool
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function isCurrentPasswordRequired(): bool
+    {
+        return !$this->isCustomerSocialLogin();
     }
 }

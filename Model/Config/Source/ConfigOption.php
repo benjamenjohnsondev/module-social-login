@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace BenJohnsonDev\SocialLogin\Model\Config\Source;
 
-use BenJohnsonDev\SocialLogin\Model\ProviderRepository;
+use BenJohnsonDev\SocialLogin\Api\ProviderRepositoryInterface;
+use Magento\Framework\Api\SearchCriteriaBuilderFactory;
 use Magento\Framework\Data\OptionSourceInterface;
 
 class ConfigOption implements OptionSourceInterface
 {
     /**
-     * @param \BenJohnsonDev\SocialLogin\Model\ProviderRepository $providerRepository
+     * @param \BenJohnsonDev\SocialLogin\Api\ProviderRepositoryInterface $providerRepository
+     * @param \Magento\Framework\Api\SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory
      */
     public function __construct(
-        protected ProviderRepository $providerRepository
+        protected ProviderRepositoryInterface $providerRepository,
+        protected SearchCriteriaBuilderFactory $searchCriteriaBuilderFactory,
     ) {
     }
 
@@ -24,22 +27,16 @@ class ConfigOption implements OptionSourceInterface
      */
     public function toOptionArray(): array
     {
-        foreach ($this->getAllOptions() as $option) {
+        $searchCriteria = $this->searchCriteriaBuilderFactory->create()->create();
+        $providers = $this->providerRepository->getList($searchCriteria)->getItems();
+
+        $return = [];
+        foreach ($providers as $provider) {
             $return[] = [
-                'value' => $option->getCode(),
-                'label' => $option->getLabel(),
+                'value' => $provider->getCode(),
+                'label' => $provider->getLabel(),
             ];
         }
-        return $return ?? [];
-    }
-
-    /**
-     * Get all providers from table
-     *
-     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface[]
-     */
-    public function getAllOptions(): array
-    {
-        return $this->providerRepository->getAllProviders();
+        return $return;
     }
 }

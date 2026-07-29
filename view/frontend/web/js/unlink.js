@@ -5,67 +5,42 @@ define([
     'use strict';
 
     $.widget('benjohnsondev.unlinkSocial', {
-        __construct(props) {
-            this._super();
-            this.options = props;
-
-            this.on('click', function () {
-                if (!$(this).is(':checked')) {
-                    self.disableChangePasswordForm();
-                    return
-                }
-
-                this.enableChangePasswordForm();
-            });
-
-        },
 
         options: {
-            changePasswordInput: $('#change-password[data-role="change-password"]'),
-            form: $('.form-edit-account#form-validate')
+            changePasswordSelector: '#change-password[data-role="change-password"]',
+            formSelector: '.form-edit-account#form-validate'
         },
 
-        disableChangePasswordForm: function () {
+        _create: function () {
+            this.element.on('change', this._onChange.bind(this));
+        },
+
+        _onChange: function () {
+            if (!this.element.is(':checked')) {
+                this._disableChangePasswordForm();
+                return;
+            }
+
+            this._enableChangePasswordForm();
+        },
+
+        _disableChangePasswordForm: function () {
             $('#unlink_provider').remove();
-            this.options.changePasswordInput.prop('checked', false);
+            $(this.options.changePasswordSelector).prop('checked', false);
         },
 
-        enableChangePasswordForm: function () {
-            const socialInput = $('<input>')
+        _enableChangePasswordForm: function () {
+            var socialInput = $('<input>')
                 .attr('type', 'hidden')
                 .attr('id', 'unlink_provider')
                 .attr('name', 'unlink_provider')
-                .attr('value', $(this).val());
+                .val(this.element.val());
 
-            this.changePasswordInput.prop('checked', true);
-
-            // Append input element to change password form
-            this.form.append(socialInput);
+            $(this.options.changePasswordSelector).prop('checked', true);
+            $(this.options.formSelector).append(socialInput);
         }
 
     });
 
     return $.benjohnsondev.unlinkSocial;
-    return function (config, element) {
-        this.changePasswordInput = $('#change-password[data-role="change-password"]');
-        this.form = $('.form-edit-account#form-validate');
-
-        this.disableChangePasswordForm = function () {
-            $('#unlink_provider').remove();
-            this.changePasswordInput.prop('checked', false);
-        }
-
-        this.enableChangePasswordForm = function () {
-            const socialInput = $('<input>')
-            .attr('type', 'hidden')
-            .attr('id', 'unlink_provider')
-            .attr('name', 'unlink_provider')
-            .attr('value', $(this).val());
-
-            this.changePasswordInput.prop('checked', true);
-
-            // Append input element to change password form
-            this.form.append(socialInput);
-        }
-    };
 });

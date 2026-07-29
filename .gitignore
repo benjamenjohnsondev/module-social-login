@@ -1,0 +1,12 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Composer
+vendor/
+composer.lock
+
+# OS
+.DS_Store
+Thumbs.db

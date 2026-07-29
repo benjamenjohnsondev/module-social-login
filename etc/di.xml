@@ -9,6 +9,7 @@
     <preference for="BenJohnsonDev\SocialLogin\Api\Account\LoginManagementInterface" type="BenJohnsonDev\SocialLogin\Model\Account\LoginManagement"/>
     <preference for="BenJohnsonDev\SocialLogin\Api\Account\RandomPasswordGeneratorInterface" type="BenJohnsonDev\SocialLogin\Model\Account\RandomPasswordGenerator"/>
     <preference for="BenJohnsonDev\SocialLogin\Api\Account\AuthorizeManagementInterface" type="BenJohnsonDev\SocialLogin\Model\Account\AuthorizeManagement"/>
+    <preference for="BenJohnsonDev\SocialLogin\Api\Account\SubscriptionManagerInterface" type="BenJohnsonDev\SocialLogin\Model\Account\SubscriptionManager"/>
     <!-- Virtual Types -->
     <virtualType name="BenJohnsonDev\SocialLogin\Model\VirtualLoggerHandler" type="Magento\Framework\Logger\Handler\Base">
         <arguments>

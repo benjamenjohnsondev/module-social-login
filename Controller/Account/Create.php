@@ -6,7 +6,7 @@ namespace BenJohnsonDev\SocialLogin\Controller\Account;
 
 use BenJohnsonDev\SocialLogin\Api\Account\CreateManagementInterface;
 use BenJohnsonDev\SocialLogin\Api\Account\LoginManagementInterface;
-use BenJohnsonDev\SocialLogin\Model\ProviderRepository;
+use BenJohnsonDev\SocialLogin\Api\ProviderRepositoryInterface;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Magento\Customer\Model\Session;
 use Magento\Framework\App\Action\HttpGetActionInterface;
@@ -30,6 +30,7 @@ class Create implements HttpGetActionInterface, CsrfAwareActionInterface
 {
     public const ROUTE = 'social/account/create';
     public const INVALID_FORM_KEY_MESSAGE = 'Invalid Form Key. Please refresh the page.';
+    public const STATE_TTL_SECONDS = 600;
     public const PROVIDER_NOT_FOUND_MESSAGE = 'There was an error retrieving the provider - original error message: %s';
     public const GET_ACCESS_TOKEN_MESSAGE = 'There was an error getting the access token - original error message: %s';
 
@@ -40,7 +41,7 @@ class Create implements HttpGetActionInterface, CsrfAwareActionInterface
      * @param \Magento\Customer\Model\Session $customerSession
      * @param \Magento\Framework\Message\ManagerInterface $messageManager
      * @param \Magento\Framework\Data\Form\FormKey $formKey
-     * @param \BenJohnsonDev\SocialLogin\Model\ProviderRepository $providerRepository
+     * @param \BenJohnsonDev\SocialLogin\Api\ProviderRepositoryInterface $providerRepository
      * @param \BenJohnsonDev\SocialLogin\Api\Account\CreateManagementInterface $createManagement
      * @param \BenJohnsonDev\SocialLogin\Api\Account\LoginManagementInterface $loginManagement
      * @param \Psr\Log\LoggerInterface $logger
@@ -52,10 +53,10 @@ class Create implements HttpGetActionInterface, CsrfAwareActionInterface
         protected Session $customerSession,
         protected MessageManager $messageManager,
         protected FormKey $formKey,
-        protected ProviderRepository $providerRepository,
+        protected ProviderRepositoryInterface $providerRepository,
         protected CreateManagementInterface $createManagement,
         protected LoginManagementInterface $loginManagement,
-        protected LoggerInterface $logger
+        protected LoggerInterface $logger,
     ) {
     }
 
@@ -77,10 +78,14 @@ class Create implements HttpGetActionInterface, CsrfAwareActionInterface
     {
         $state = $this->getRequest()->getParam('state');
 
-        // CSRF check - if state is null or state does not match session state.
+        // CSRF check — state must be present, match session, and be within TTL.
+        $sessionState = $this->customerSession->getData('state');
+        $stateInitiatedAt = (int) $this->customerSession->getData('state_initiated_at');
+
         if ($state === null ||
             $state === '' ||
-            $state !== $this->customerSession->getData('state')
+            $state !== $sessionState ||
+            (time() - $stateInitiatedAt) > self::STATE_TTL_SECONDS
         ) {
             return $this->createError(self::INVALID_FORM_KEY_MESSAGE);
         }
@@ -182,7 +187,7 @@ class Create implements HttpGetActionInterface, CsrfAwareActionInterface
      * @throws \League\OAuth2\Client\Provider\Exception\IdentityProviderException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function extractOauth(): array
+    private function extractOauth(): array
     {
         // Some providers, ahem Facebook, have buggy implementations of the redirect uri.
         // This is a workaround for that.

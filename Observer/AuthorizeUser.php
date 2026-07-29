@@ -13,7 +13,7 @@ class AuthorizeUser implements ObserverInterface
 {
     public function __construct(
         protected Session $customerSession,
-        protected AuthorizeManagementInterface $authorizeManagement
+        protected AuthorizeManagementInterface $authorizeManagement,
     ) {
     }
 
@@ -36,11 +36,21 @@ class AuthorizeUser implements ObserverInterface
         $customer = $this->customerSession->getCustomer();
 
         //If the customer uses a social login, check if the user is authorized
-        if ($customer->getProvider() !== null ||
+        if ($customer->getProvider() !== null &&
             $customer->getProvider() !== 'revoked'
         ) {
+            // Skip the token check if already validated this session to avoid a DB hit on every page load
+            if ($this->customerSession->getData('social_login_token_checked')) {
+                return;
+            }
+
             // Void method - logs user out if token is expired/invalid
             $this->authorizeManagement->authorizeUser($customer);
+
+            // Only set the flag if the customer is still logged in after the check
+            if ($this->customerSession->isLoggedIn()) {
+                $this->customerSession->setData('social_login_token_checked', true);
+            }
         }
     }
 }

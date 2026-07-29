@@ -15,7 +15,7 @@ class RandomPasswordGenerator implements RandomPasswordGeneratorInterface
      * @param \Magento\Framework\Math\Random $mathRandom
      */
     public function __construct(
-        protected Random $mathRandom
+        protected Random $mathRandom,
     ) {
     }
 
@@ -24,14 +24,9 @@ class RandomPasswordGenerator implements RandomPasswordGeneratorInterface
      */
     public function generate(): string
     {
-        $string = $this->mathRandom->getRandomString(
-            255,
-            Random::CHARS_LOWERS . Random::CHARS_UPPERS . self::CHARS_SPECIALS
+        return $this->mathRandom->getRandomString(
+            30,
+            Random::CHARS_LOWERS . Random::CHARS_UPPERS . Random::CHARS_DIGITS . self::CHARS_SPECIALS
         );
-        $numbers = $this->mathRandom->getRandomString(100, Random::CHARS_DIGITS);
-
-        $shuffled = str_shuffle($string . $numbers);
-
-        return substr($shuffled, 0, 30);
     }
 }

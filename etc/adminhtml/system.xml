@@ -15,8 +15,8 @@
                     <label>Enable Social Login</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="enabled_on_login_page" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable Social Login</label>
+                <field id="enabled_on_login_page" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable on Login Page</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="enabled_providers" translate="label" type="multiselect" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -36,6 +36,10 @@
                 <field id="client_secret" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Facebook App Secret</label>
                 </field>
+                <field id="scope" translate="label comment" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Scopes</label>
+                    <comment>Comma-separated list of OAuth scopes to request (e.g. email,public_profile).</comment>
+                </field>
             </group>
             <group id="github" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Github Login</label>
@@ -44,6 +48,10 @@
                 </field>
                 <field id="client_secret" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Github App Secret</label>
+                </field>
+                <field id="scope" translate="label comment" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Scopes</label>
+                    <comment>Comma-separated list of OAuth scopes to request (e.g. user,user:email).</comment>
                 </field>
             </group>
             <group id="google" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -54,6 +62,10 @@
                 <field id="client_secret" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Google App Secret</label>
                 </field>
+                <field id="scope" translate="label comment" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Scopes</label>
+                    <comment>Comma-separated list of OAuth scopes to request (e.g. openid,email,profile).</comment>
+                </field>
             </group>
             <group id="instagram" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Instagram Login</label>
@@ -63,6 +75,10 @@
                 <field id="client_secret" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Instagram App Secret</label>
                 </field>
+                <field id="scope" translate="label comment" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Scopes</label>
+                    <comment>Comma-separated list of OAuth scopes to request (e.g. user_profile,user_media).</comment>
+                </field>
             </group>
             <group id="linkedin" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Linkedin Login</label>
@@ -71,6 +87,10 @@
                 </field>
                 <field id="client_secret" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Linkedin App Secret</label>
+                </field>
+                <field id="scope" translate="label comment" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Scopes</label>
+                    <comment>Comma-separated list of OAuth scopes to request (e.g. r_liteprofile,r_emailaddress).</comment>
                 </field>
             </group>
         </section>

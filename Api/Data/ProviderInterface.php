@@ -12,7 +12,6 @@ interface ProviderInterface
      * String constants for property names
      */
     public const LABEL = 'label';
-    public const SCOPE = 'scope';
     public const ICON = 'icon';
     public const OAUTH_CLASS = 'oauth_class';
     public const CODE = 'code';
@@ -62,13 +61,6 @@ interface ProviderInterface
     public function getOauthClass(?array $configOverload): ?AbstractProvider;
 
     /**
-     * Getter for Scope
-     *
-     * @return string|null
-     */
-    public function getScope(): ?string;
-
-    /**
      * Setter for code
      *
      * @param string $code
@@ -116,11 +108,4 @@ interface ProviderInterface
      */
     public function setOauthClass(string $oauthClass): static;
 
-    /**
-     * Set Scope
-     *
-     * @param string $scope
-     * @return static
-     */
-    public function setScope(string $scope): static;
 }

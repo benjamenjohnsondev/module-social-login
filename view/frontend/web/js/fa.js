@@ -1,3 +1,15 @@
+/**
+ * FontAwesome Kit loader — inline RequireJS module.
+ *
+ * The FontAwesome Kit CDN script (https://kit.fontawesome.com/<id>.js) uses document.currentScript
+ * and dynamic <script> injection internally, which collides with RequireJS module loading.
+ * Loading it via a standard <script src="..."> tag or require() causes the kit to fail silently
+ * because RequireJS wraps the execution context and currentScript returns null.
+ *
+ * Workaround: reproduce the FontAwesomeKitConfig initialisation and kit bootstrap inline within a
+ * RequireJS define() callback so the config object is set synchronously before the kit loader runs.
+ * The bundled loader below is pinned to FontAwesome free v6.5.1.
+ */
 define([], function () {
     'use strict';
 

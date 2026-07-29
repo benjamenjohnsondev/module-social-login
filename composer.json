@@ -1,6 +1,6 @@
 {
     "name": "benjohnsondev/module-social-login",
-    "description": "N/A",
+    "description": "Social login for Magento 2 via Facebook, GitHub, Google, Instagram and LinkedIn",
     "type": "magento2-module",
     "require": {
         "php": "^8.2",

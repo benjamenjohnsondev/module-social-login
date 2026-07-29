@@ -6,6 +6,7 @@
 $provider = $block->getProvider();
 ?>
 <form class="social-login-form" id="social-login-<?= $escaper->escapeHtml($provider->getCode()); ?>" action="<?= $escaper->escapeHtml($block->getPostActionUrl()); ?>" method="post">
+    <?= /* @noEscape */ $block->getBlockHtml('formkey') ?>
     <?php /** Hidden input - keeps track if user has clicked on subscribe button or not **/ ?>
     <input type="hidden" name="is_subscribed" title="Sign Up for Newsletter" value="0" class="checkbox">
     <fieldset class="fieldset">

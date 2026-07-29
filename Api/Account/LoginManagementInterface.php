@@ -7,7 +7,7 @@ namespace BenJohnsonDev\SocialLogin\Api\Account;
 use BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\ResultInterface;
 
 interface LoginManagementInterface
 {
@@ -17,12 +17,12 @@ interface LoginManagementInterface
      * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @param \League\OAuth2\Client\Token\AccessTokenInterface $accessToken
      * @param \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface $provider
-     * @return \Magento\Framework\Controller\Result\Redirect
+     * @return \Magento\Framework\Controller\ResultInterface
      * @throws \Magento\Framework\Exception\State\InputMismatchException
      */
     public function loginCustomer(
         CustomerInterface $customer,
         AccessTokenInterface $accessToken,
         ProviderInterface $provider
-    ): Redirect;
+    ): ResultInterface;
 }

@@ -3,10 +3,10 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="social_login_providers" resource="default" engine="innodb" comment="Provider Table">
         <column xsi:type="int" name="entity_id" padding="10" unsigned="true" nullable="false" identity="true" comment="Provider Id"/>
-        <column xsi:type="text" nullable="false" name="label" comment="Provider Label"/>
-        <column xsi:type="text" nullable="false" name="icon" comment="Provider Icon"/>
-        <column xsi:type="text" nullable="false" name="oauth_class" comment="Provider Oauth Class"/>
-        <column xsi:type="text" nullable="false" name="code" comment="Provider code"/>
+        <column xsi:type="varchar" length="255" nullable="false" name="label" comment="Provider Label"/>
+        <column xsi:type="varchar" length="255" nullable="false" name="icon" comment="Provider Icon"/>
+        <column xsi:type="varchar" length="255" nullable="false" name="oauth_class" comment="Provider Oauth Class"/>
+        <column xsi:type="varchar" length="64" nullable="false" name="code" comment="Provider code"/>
         <column xsi:type="text" nullable="true" name="default_config" comment="Provider Default config"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>

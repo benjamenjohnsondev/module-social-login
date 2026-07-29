@@ -11,31 +11,39 @@ use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Customer\Api\Data\CustomerInterfaceFactory;
-use Magento\Customer\Model\AccountManagement;
 use Magento\Customer\Model\CustomerRegistry;
 use Magento\Customer\Model\Session;
-use Magento\Framework\Api\SearchCriteriaBuilderFactory;
+use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Framework\Exception\State\InputMismatchException;
+use Magento\Framework\Math\Random;
+use Magento\Framework\Stdlib\DateTime;
+use BenJohnsonDev\SocialLogin\Api\Account\SubscriptionManagerInterface;
 
 class CreateManagement implements CreateManagementInterface
 {
     /**
      * @param \Magento\Customer\Model\Session $customerSession
      * @param \Magento\Customer\Api\Data\CustomerInterfaceFactory $customerFactory
-     * @param \Magento\Framework\Api\SearchCriteriaBuilderFactory $searchCriteriaBuilder
      * @param \Magento\Customer\Api\CustomerRepositoryInterface $customerRepository
      * @param \Magento\Customer\Model\CustomerRegistry $customerRegistry
      * @param \Magento\Customer\Api\AccountManagementInterface $accountManagement
      * @param \BenJohnsonDev\SocialLogin\Model\Account\RandomPasswordGenerator $randomPasswordGenerator
+     * @param \Magento\Framework\Math\Random $mathRandom
+     * @param \Magento\Framework\Stdlib\DateTime $dateTime
+     * @param \BenJohnsonDev\SocialLogin\Api\Account\SubscriptionManagerInterface $subscriptionManager
+     * @param \Magento\Framework\Encryption\EncryptorInterface $encryptor
      */
     public function __construct(
         protected Session $customerSession,
         protected CustomerInterfaceFactory $customerFactory,
-        protected SearchCriteriaBuilderFactory $searchCriteriaBuilder,
         protected CustomerRepositoryInterface $customerRepository,
         protected CustomerRegistry $customerRegistry,
         protected AccountManagementInterface $accountManagement,
-        protected RandomPasswordGenerator $randomPasswordGenerator
+        protected RandomPasswordGenerator $randomPasswordGenerator,
+        protected Random $mathRandom,
+        protected DateTime $dateTime,
+        protected SubscriptionManagerInterface $subscriptionManager,
+        protected EncryptorInterface $encryptor,
     ) {
     }
 
@@ -52,8 +60,8 @@ class CreateManagement implements CreateManagementInterface
         // Magento 2 only supports creating an account with an email as a unique identifier.
         // Future versions of this module get the users email from a credentials route after the "create" route.
         // Firstname and Lastname are optional, but if they are not provided we should throw an exception.
-        if (!$user->getEmail() &&
-            !$user->getFirstName() &&
+        if (!$user->getEmail() ||
+            !$user->getFirstName() ||
             !$user->getLastName()
         ) {
             throw new InputMismatchException(
@@ -61,17 +69,21 @@ class CreateManagement implements CreateManagementInterface
             );
         }
 
-        $customer->setData('firstname', $user->getFirstName())
-            ->setData('lastname', $user->getLastName())
-            ->setData('email', $user->getEmail())
+        $customer->setFirstname($user->getFirstName())
+            ->setLastname($user->getLastName())
+            ->setEmail($user->getEmail())
             ->setCustomAttribute('provider', $this->customerSession->getData('provider'))
-            ->setCustomAttribute('social_uid', $user->getId());
+            ->setCustomAttribute('social_uid', (string) $user->getId());
         $customer = $this->refreshToken($customer, $accessToken);
 
-        // Unset the provider and state from the session - we shouldn't need this data anymore.
+        $isSubscribed = $this->customerSession->getData('is_subscribed') === '1';
+
+        // Unset the provider, state, TTL timestamp, and subscription flag from the session.
         $this->customerSession->unsetData([
             'provider',
             'state',
+            'state_initiated_at',
+            'is_subscribed',
         ]);
 
         $password = $this->accountManagement->getPasswordHash(
@@ -80,7 +92,7 @@ class CreateManagement implements CreateManagementInterface
 
         try {
             // Redirect uri is for confirmation email.
-            return $this->accountManagement->createAccount($customer, $password, $redirectUrl);
+            $customer = $this->accountManagement->createAccount($customer, $password, $redirectUrl);
         } catch (InputMismatchException) {
 
             // If User already exists with specified email then:
@@ -92,9 +104,13 @@ class CreateManagement implements CreateManagementInterface
 
             $customer = $this->refreshToken($customer, $accessToken);
             $this->customerRepository->save($customer);
-
-            return $customer;
         }
+
+        if ($isSubscribed) {
+            $this->subscriptionManager->subscribe((int) $customer->getId());
+        }
+
+        return $customer;
     }
 
     /**
@@ -106,8 +122,12 @@ class CreateManagement implements CreateManagementInterface
      */
     private function refreshToken(CustomerInterface $customer, AccessTokenInterface $accessToken): CustomerInterface
     {
+        $refreshToken = $accessToken->getRefreshToken();
         $customer
-            ->setCustomAttribute('refresh_token', $accessToken->getRefreshToken())
+            ->setCustomAttribute(
+                'refresh_token',
+                $refreshToken !== null ? $this->encryptor->encrypt($refreshToken) : null
+            )
             ->setCustomAttribute('token_expire', $accessToken->getExpires());
         return $customer;
     }
@@ -128,22 +148,25 @@ class CreateManagement implements CreateManagementInterface
     }
 
     /**
-     * Get reset password token
+     * Generate and persist a reset-password token without sending a transactional email.
      *
-     * @param CustomerInterface $customer
+     * @param \Magento\Customer\Api\Data\CustomerInterface $customer
      * @return string
-     *
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     private function getResetPasswordToken(CustomerInterface $customer): string
     {
-        $this->accountManagement->initiatePasswordReset(
-            $customer->getEmail(),
-            AccountManagement::EMAIL_RESET,
-            1
-        );
+        $rpToken = $this->mathRandom->getUniqueHash();
+        $rpTokenCreatedAt = $this->dateTime->formatDate(true);
 
         $customerSecure = $this->customerRegistry->retrieveSecureData($customer->getId());
-        return $customerSecure->getRpToken();
+        $customerSecure->setRpToken($rpToken);
+        $customerSecure->setRpTokenCreatedAt($rpTokenCreatedAt);
+
+        $customer->setCustomAttribute('rp_token', $rpToken);
+        $customer->setCustomAttribute('rp_token_created_at', $rpTokenCreatedAt);
+        $this->customerRepository->save($customer);
+
+        return $rpToken;
     }
 }

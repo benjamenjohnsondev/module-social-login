@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <social_login>
+            <general>
+                <enabled>0</enabled>
+                <enabled_on_login_page>0</enabled_on_login_page>
+            </general>
+        </social_login>
+    </default>
+</config>

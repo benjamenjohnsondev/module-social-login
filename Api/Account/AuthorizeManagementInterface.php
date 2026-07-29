@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace BenJohnsonDev\SocialLogin\Api\Account;
 
+use Magento\Customer\Api\Data\CustomerInterface;
+use Magento\Customer\Model\Customer;
+
 interface AuthorizeManagementInterface
 {
     /**
@@ -11,7 +14,6 @@ interface AuthorizeManagementInterface
      *
      * @param \Magento\Customer\Api\Data\CustomerInterface|\Magento\Customer\Model\Customer $customer
      * @return void
-     * @noinspection PhpMissingParamTypeInspection
      */
-    public function authorizeUser($customer): void;
+    public function authorizeUser(CustomerInterface|Customer $customer): void;
 }

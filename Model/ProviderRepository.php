@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace BenJohnsonDev\SocialLogin\Model;
 
@@ -33,43 +33,20 @@ class ProviderRepository implements ProviderRepositoryInterface
         protected ProviderSearchResultInterfaceFactory $searchResultFactory,
         protected CollectionProcessorInterface $collectionProcessor,
         protected ResourceModel\Provider $providerResourceModel,
-        protected ScopeConfigInterface $scopeConfig
+        protected ScopeConfigInterface $scopeConfig,
     ) {
     }
 
     /**
-     * Delete provider
-     *
-     * @param \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface $provider
-     * @return void
-     * @throws \Exception
+     * @inheritDoc
      */
     public function delete(ProviderInterface $provider): void
     {
-        /** @var $provider Provider * */
         $this->providerResourceModel->delete($provider);
     }
 
     /**
-     * Get all providers from table
-     *
-     * @return ProviderInterface[]
-     * @noinspection PhpIncompatibleReturnTypeInspection
-     * @noinspection PhpMissingReturnTypeInspection
-     * @noinspection PhpReturnDocTypeMismatchInspection
-     */
-    public function getAllProviders()
-    {
-        $collection = $this->providerCollectionFactory->create();
-        return $collection->getItems();
-    }
-
-    /**
-     * Get provider by id
-     *
-     * @param string $code
-     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @inheritDoc
      */
     public function getByCode(string $code): ProviderInterface
     {
@@ -82,11 +59,7 @@ class ProviderRepository implements ProviderRepositoryInterface
     }
 
     /**
-     * Get provider by code
-     *
-     * @param int $id
-     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @inheritDoc
      */
     public function getById(int $id): ProviderInterface
     {
@@ -99,48 +72,26 @@ class ProviderRepository implements ProviderRepositoryInterface
     }
 
     /**
-     * Gets all valid providers
-     *
-     * @return ProviderInterface[]
+     * @inheritDoc
      */
     public function getEnabledProviders(): array
     {
-        if (!$this->scopeConfig->isSetFlag(
-            self::SOCIAL_LOGIN_GENERAL_ENABLED_CONFIG_PATH
-        )) {
+        if (!$this->scopeConfig->isSetFlag(self::SOCIAL_LOGIN_GENERAL_ENABLED_CONFIG_PATH)) {
             return [];
         }
 
-        $enabledProviders = $this->scopeConfig->getValue(
-            self::SOCIAL_LOGIN_GENERAL_PROVIDERS_CONFIG_PATH
-        );
+        $enabledProviders = $this->scopeConfig->getValue(self::SOCIAL_LOGIN_GENERAL_PROVIDERS_CONFIG_PATH);
 
         /** @var \BenJohnsonDev\SocialLogin\Model\ResourceModel\Provider\Collection $collection */
         $collection = $this->providerCollectionFactory->create();
-        $collection->addFieldToFilter(
-            'code',
-            [
-                ['in' => $enabledProviders],
-            ],
-        )->addFieldToFilter(
-            'oauth_class',
-            [
-                ['neq' => ''],
-            ],
-        )->addFieldToFilter(
-            'oauth_class',
-            [
-                ['neq' => ''],
-            ],
-        );
+        $collection->addFieldToFilter('code', [['in' => $enabledProviders]])
+            ->addFieldToFilter('oauth_class', [['neq' => '']]);
+
         return $collection->getItems();
     }
 
     /**
-     * Get list of providers
-     *
-     * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
-     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderSearchResultInterface
+     * @inheritDoc
      */
     public function getList(SearchCriteriaInterface $searchCriteria): ProviderSearchResultInterface
     {
@@ -148,22 +99,17 @@ class ProviderRepository implements ProviderRepositoryInterface
         $this->collectionProcessor->process($searchCriteria, $collection);
         $searchResult = $this->searchResultFactory->create();
         $searchResult->setSearchCriteria($searchCriteria);
-        /** @noinspection PhpParamsInspection */
         $searchResult->setItems($collection->getItems());
         $searchResult->setTotalCount($collection->getSize());
         return $searchResult;
     }
 
     /**
-     * Save provider
-     *
-     * @param \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface $provider
-     * @return void
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @inheritDoc
      */
-    public function save(ProviderInterface $provider): void
+    public function save(ProviderInterface $provider): ProviderInterface
     {
-        /** @var $provider Provider * */
         $this->providerResourceModel->save($provider);
+        return $provider;
     }
 }

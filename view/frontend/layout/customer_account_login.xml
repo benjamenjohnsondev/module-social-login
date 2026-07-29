@@ -3,7 +3,7 @@
     <body>
         <referenceContainer name="content">
             <container name="customer.login.social.login" label="Customer SocialLogin Login Container" htmlTag="div" htmlClass="social-login-login-container social-login-container">
-                <block class="BenJohnsonDev\SocialLogin\Block\SocialRegister" template="BenJohnsonDev_SocialLogin::login/form/register.phtml" ifconfig="social_login/general/enabled"/>
+                <block class="BenJohnsonDev\SocialLogin\Block\SocialRegister" template="BenJohnsonDev_SocialLogin::login/form/register.phtml" ifconfig="social_login/general/enabled_on_login_page"/>
             </container>
         </referenceContainer>
     </body>

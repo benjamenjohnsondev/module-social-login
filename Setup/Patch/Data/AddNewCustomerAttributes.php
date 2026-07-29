@@ -65,7 +65,7 @@ class AddNewCustomerAttributes implements DataPatchInterface
      * @param \Magento\Customer\Setup\CustomerSetupFactory $customerSetupFactory
      */
     public function __construct(
-        protected CustomerSetupFactory $customerSetupFactory
+        protected CustomerSetupFactory $customerSetupFactory,
     ) {
     }
 

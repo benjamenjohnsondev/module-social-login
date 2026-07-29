@@ -19,6 +19,22 @@ interface ProviderRepositoryInterface
     public function delete(ProviderInterface $provider): void;
 
     /**
+     * Get provider by code
+     *
+     * @param string $code
+     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    public function getByCode(string $code): ProviderInterface;
+
+    /**
+     * Get enabled providers
+     *
+     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface[]
+     */
+    public function getEnabledProviders(): array;
+
+    /**
      * Get provider by id
      *
      * @param int $id
@@ -39,8 +55,8 @@ interface ProviderRepositoryInterface
      * Save provider
      *
      * @param \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface $provider
-     * @return void
+     * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface
      * @throws \Magento\Framework\Exception\AlreadyExistsException
      */
-    public function save(ProviderInterface $provider): void;
+    public function save(ProviderInterface $provider): ProviderInterface;
 }

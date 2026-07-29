@@ -74,8 +74,8 @@ class InstallProvidersPatch implements DataPatchInterface
             $provider->setData($providerData);
             $provider->setCode($providerCode);
 
-            if ($provider['default_config'] !== null) {
-                $provider->setDefaultConfig($provider['default_config']);
+            if (isset($providerData['default_config'])) {
+                $provider->setDefaultConfig($providerData['default_config']);
             }
 
             $this->providerRepository->save($provider);

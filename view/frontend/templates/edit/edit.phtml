@@ -1,0 +1,35 @@
+<?php
+
+/** @var \BenJohnsonDev\SocialLogin\Block\Form\Edit $block */
+
+if (!$block->isCustomerSocialLogin()) {
+    return;
+}
+?>
+<div class="social-login edit-account-wrapper">
+    <h2><?= $block->escapeHtml(__('Linked Account')) ?></h2>
+    <p class="social-login-linked-provider">
+        <i class="<?= $block->escapeHtmlAttr($block->getProvider()->getIcon()) ?>"></i>
+        <?= $block->escapeHtml(__('Your account is linked to %1.', $block->getProviderLabel())) ?>
+    </p>
+    <p class="social-login-password-notice">
+        <?= $block->escapeHtml(
+            __('Your account uses %1 for authentication. To set a password, unlink your social account first.', $block->getProviderLabel())
+        ) ?>
+    </p>
+    <div class="social-login unlink edit-wrapper">
+        <input type="checkbox" name="unlink_social" id="unlink-social" data-role="change-password" value="1"
+               title="<?= $block->escapeHtmlAttr(__('Unlink')) ?>"
+            <?php if ($block->getChangePassword()): ?> checked="checked"<?php endif; ?> class="checkbox"/>
+        <label class="label" for="unlink-social">
+            <span><?= $block->escapeHtml(__('Unlink %1', $block->getProviderLabel())) ?></span>
+        </label>
+    </div>
+</div>
+<script type="text/x-magento-init">
+    {
+        "#unlink-social": {
+            "BenJohnsonDev_SocialLogin/js/unlink": {}
+        }
+    }
+</script>

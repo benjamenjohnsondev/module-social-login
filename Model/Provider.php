@@ -16,7 +16,6 @@ use Magento\Framework\Registry;
 
 class Provider extends AbstractModel implements ProviderInterface
 {
-    private const ENABLED = 'enabled';
     /**
      * @var string
      */
@@ -54,14 +53,6 @@ class Provider extends AbstractModel implements ProviderInterface
     }
 
     /**
-     * Get provider enabled
-     */
-    public function getEnabled(): ?string
-    {
-        return $this->getData(self::ENABLED);
-    }
-
-    /**
      * @inheritDoc
      */
     public function getIcon(): ?string
@@ -88,18 +79,22 @@ class Provider extends AbstractModel implements ProviderInterface
     /**
      * @inheritDoc
      */
-    public function getOauthClass($configOverload = null): ?AbstractProvider
+    public function getOauthClass(?array $configOverload = null): ?AbstractProvider
     {
         $oauthClass = $this->getData(self::OAUTH_CLASS);
 
+        if (!is_a($oauthClass, AbstractProvider::class, true)) {
+            throw new \InvalidArgumentException(
+                sprintf('"%s" is not a valid OAuth2 provider class.', $oauthClass)
+            );
+        }
+
         $config = $this->providerConfigFactory->create([
-            'data' => $this->getDefaultConfig() ?? [],
-            'code' => $this->getCode(),
+            'extra' => $this->getDefaultConfig() ?? [],
+            'code'  => $this->getCode(),
         ]);
 
-        $data = array_merge($config->getData(), $configOverload ?? []);
-
-        return new $oauthClass($data);
+        return new $oauthClass($config->toOauthConfig($configOverload ?? []));
     }
 
     /**
@@ -122,14 +117,6 @@ class Provider extends AbstractModel implements ProviderInterface
     /**
      * @inheritDoc
      */
-    public function getScope(): ?string
-    {
-        return $this->getData(self::SCOPE);
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function setCode(string $code): static
     {
         return $this->setData(self::CODE, $code);
@@ -142,17 +129,6 @@ class Provider extends AbstractModel implements ProviderInterface
     {
         $defaultConfig = json_encode($defaultConfig);
         return $this->setData(self::DEFAULT_CONFIG, $defaultConfig);
-    }
-
-    /**
-     * Set provider to enabled
-     *
-     * @param bool $enabled
-     * @return void
-     */
-    private function setEnabled(bool $enabled)
-    {
-        $this->setData(self::ENABLED, $enabled);
     }
 
     /**
@@ -187,11 +163,4 @@ class Provider extends AbstractModel implements ProviderInterface
         return $this->setData(self::OAUTH_CLASS, $oauthClass);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function setScope(string $scope): static
-    {
-        return $this->setData(self::SCOPE, $scope);
-    }
 }

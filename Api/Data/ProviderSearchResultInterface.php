@@ -12,7 +12,6 @@ interface ProviderSearchResultInterface extends SearchResultsInterface
      * Get Providers
      *
      * @return \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface[]
-     * @noinspection PhpMissingReturnTypeInspection
      */
     public function getItems();
 
@@ -21,7 +20,6 @@ interface ProviderSearchResultInterface extends SearchResultsInterface
      *
      * @param \BenJohnsonDev\SocialLogin\Api\Data\ProviderInterface[] $items
      * @return $this
-     * @noinspection PhpMissingReturnTypeInspection
      */
     public function setItems(array $items);
 }

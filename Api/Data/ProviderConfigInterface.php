@@ -14,6 +14,14 @@ interface ProviderConfigInterface
     public const REDIRECT_URI = "redirect_uri";
 
     /**
+     * Returns config array suitable for passing to an OAuth provider constructor.
+     *
+     * @param array $extra Additional key-value pairs to merge in (e.g. provider-specific defaults).
+     * @return array
+     */
+    public function toOauthConfig(array $extra = []): array;
+
+    /**
      * Getter for ClientId.
      *
      * @return string

@@ -13,7 +13,8 @@ if (!$block->isCustomerSocialLogin()) {
            title="<?= $block->escapeHtmlAttr(__('Unlink')) ?>"
         <?php if ($block->getChangePassword()): ?> checked="checked"<?php endif; ?> class="checkbox"/>
     <label class="label" for="unlink-social">
-        <span>Unlink <?= $block->getProviderLabel() ?></span>
+        <span><?= $block->escapeHtml(__('Unlink %1', $block->getProviderLabel())) ?></span>
+    </label>
 </div>
 <script type="text/x-magento-init">
     {
