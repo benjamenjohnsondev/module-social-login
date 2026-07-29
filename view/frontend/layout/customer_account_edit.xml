@@ -2,7 +2,10 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="BenJohnsonDev\SocialLogin\Block\Form\Edit" name="form.additional.info.social.login" after="-" template="BenJohnsonDev_SocialLogin::edit/edit.phtml"/>
+            <block class="BenJohnsonDev\SocialLogin\Block\Form\Edit"
+                   name="social.login.edit"
+                   template="BenJohnsonDev_SocialLogin::edit/form/social.phtml"
+                   cacheable="false"/>
         </referenceContainer>
     </body>
 </page>

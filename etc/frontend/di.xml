@@ -21,6 +21,15 @@
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
         </arguments>
     </type>
+    <type name="Magento\Customer\Controller\Account\EditPost">
+        <plugin name="SocialLogin_UnlinkAccount"
+                type="BenJohnsonDev\SocialLogin\Plugin\Account\EditPostPlugin"/>
+    </type>
+    <type name="BenJohnsonDev\SocialLogin\Plugin\Account\EditPostPlugin">
+        <arguments>
+            <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
     <type name="Magento\Security\Model\SecurityChecker\Frequency">
         <plugin name="SocialLogin_BypassChecker_Frequency"
                 type="BenJohnsonDev\SocialLogin\Plugin\BypassChecker"/>

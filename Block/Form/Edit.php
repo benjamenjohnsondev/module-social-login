@@ -34,6 +34,24 @@ class Edit extends Template
     }
 
     /**
+     * Add a body class when the customer is using social login so CSS can hide the password fields immediately.
+     *
+     * @return \BenJohnsonDev\SocialLogin\Block\Form\Edit
+     */
+    protected function _prepareLayout(): Edit
+    {
+        try {
+            if ($this->isCustomerSocialLogin()) {
+                $this->pageConfig->addBodyClass('social-login-active');
+            }
+        } catch (\Exception) {
+            // Session not available — fail silently
+        }
+
+        return parent::_prepareLayout();
+    }
+
+    /**
      * Get the current customer data object
      *
      * @return \Magento\Customer\Api\Data\CustomerInterface

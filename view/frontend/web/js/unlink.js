@@ -7,8 +7,7 @@ define([
     $.widget('benjohnsondev.unlinkSocial', {
 
         options: {
-            changePasswordSelector: '#change-password[data-role="change-password"]',
-            formSelector: '.form-edit-account#form-validate'
+            formSelector: '.form-edit-account'
         },
 
         _create: function () {
@@ -17,27 +16,24 @@ define([
 
         _onChange: function () {
             if (!this.element.is(':checked')) {
-                this._disableChangePasswordForm();
+                this._removeInput();
                 return;
             }
 
-            this._enableChangePasswordForm();
+            this._appendInput();
         },
 
-        _disableChangePasswordForm: function () {
-            $('#unlink_provider').remove();
-            $(this.options.changePasswordSelector).prop('checked', false);
-        },
-
-        _enableChangePasswordForm: function () {
-            var socialInput = $('<input>')
+        _appendInput: function () {
+            this._removeInput();
+            $('<input>')
                 .attr('type', 'hidden')
-                .attr('id', 'unlink_provider')
                 .attr('name', 'unlink_provider')
-                .val(this.element.val());
+                .val(this.element.val())
+                .appendTo($(this.options.formSelector));
+        },
 
-            $(this.options.changePasswordSelector).prop('checked', true);
-            $(this.options.formSelector).append(socialInput);
+        _removeInput: function () {
+            $(this.options.formSelector).find('[name="unlink_provider"]').remove();
         }
 
     });

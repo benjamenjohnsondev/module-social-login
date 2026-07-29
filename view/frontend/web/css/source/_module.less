@@ -1,3 +1,16 @@
+// Hide the change-password checkbox and password fieldset for social login customers.
+// The body class is set server-side in Block/Form/Edit::_toHtml() before the page renders.
+body.social-login-active {
+    .field.choice:has([data-role="change-password"]),
+    .field.choice:has([data-role="change-email"]) {
+        display: none;
+    }
+
+    [data-container="change-email-password"] {
+        display: none;
+    }
+}
+
 .social-login-container {
     margin: 40px 0 0;
 
